@@ -17,11 +17,12 @@ public:
         {
             CameraComponent* player_camera = engine->ecs.get_component<CameraComponent>(entity);
             TransformComponent* car_transform = engine->ecs.get_component<TransformComponent>(entity);
+            RealRotationComponent* car_rotation = engine->ecs.get_component<RealRotationComponent>(entity);
             PhysicsComponent* car_physics = engine->ecs.get_component<PhysicsComponent>(entity);
             PositionComponent* cam_position = engine->ecs.get_component<PositionComponent>(entity);
 
-            float yaw_rads = car_transform->rotation.y * (3.14159 / 180.f);
-            float pitch_rads = car_transform->rotation.x * (3.14159 / 180.f);
+            float yaw_rads = car_rotation->rotation.y * (3.14159 / 180.f);
+            float pitch_rads = car_rotation->rotation.x * (3.14159 / 180.f);
 
             Vector3 forward;
             forward.x = sin(yaw_rads) * cos(pitch_rads);
@@ -32,26 +33,61 @@ public:
             float movement_speed = 20;
             float rotation_speed = 180;
 
+            Vector3 new_car_pos = car_transform->position;
+//            Vector3 new_car_rot = car_transform->rotation;
+            Vector3 new_real_rotation = car_rotation->rotation;
 
+            //have real rotation and fake rotation for car, if not drifting fake/render rotation should interpolate to try and match real rotation (or overshoot), if drifting fake rotation will stay at an angle to real rotation
+
+
+            int drift_dir = 0; // Test, need actual like timed drift etc.
+            // Further if init drift on say left, should be able to press right (D) to hold the drift and kind of retain momentum rather than turning
             if (engine->input_manager.is_key_pressed(0x57))
             {
-                car_transform->position = car_transform->position + forward * movement_speed * dt;
+                new_car_pos = new_car_pos + forward * movement_speed * dt;
             }
 
             if (engine->input_manager.is_key_pressed(0x53))
             {
-                car_transform->position = car_transform->position - forward * movement_speed * dt;
+                new_car_pos = new_car_pos - forward * movement_speed * dt;
             }
             
             if (engine->input_manager.is_key_pressed(0x44)) //D
             {
-                car_transform->rotation.y += rotation_speed * dt; // yaw
+                new_real_rotation.y += rotation_speed * dt; // yaw
+                drift_dir = 2;
             }
            
             if (engine->input_manager.is_key_pressed(0x41)) //A
             {
-                car_transform->rotation.y -= rotation_speed * dt; // yaw
+                new_real_rotation.y -= rotation_speed * dt; // yaw
+                drift_dir = 1;
             }
+
+            bool test_drift = false;
+            if (engine->input_manager.is_key_pressed(VK_SHIFT))
+            {
+                test_drift = true;
+            }
+
+            car_rotation->rotation = new_real_rotation;
+
+            car_transform->position = new_car_pos;
+            //interpolation, drifting
+            car_transform->rotation = new_real_rotation;
+            if (test_drift && drift_dir != 0)
+            {
+                if (drift_dir == 1)
+                {
+                    car_transform->rotation.y -= 40;
+                }
+                else
+                {
+                    car_transform->rotation.y += 40;
+                }
+            }
+
+            float camera_yaw_interp = new_real_rotation.y;
 
             Vector3 new_pos;
             new_pos = car_transform->position - forward * 5;
@@ -59,7 +95,7 @@ public:
             cam_position->position = new_pos;
 
             player_camera->pitch = -20;
-            player_camera->yaw = car_transform->rotation.y;
+            player_camera->yaw = camera_yaw_interp;
             player_camera->clamp_rotation();
             player_camera->update_view(cam_position->position);
             player_camera->last_position = cam_position->position;

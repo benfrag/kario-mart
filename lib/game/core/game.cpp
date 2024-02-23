@@ -96,6 +96,7 @@ void setup_local_player_systems(EngineCore* engine)
     Signature local_player_input_signature;
     local_player_input_signature.set(engine->ecs.get_component_type_id<LocalPlayerComponent>());
     local_player_input_signature.set(engine->ecs.get_component_type_id<TransformComponent>());
+    local_player_input_signature.set(engine->ecs.get_component_type_id<RealRotationComponent>());
     local_player_input_signature.set(engine->ecs.get_component_type_id<PositionComponent>());
     local_player_input_signature.set(engine->ecs.get_component_type_id<CameraComponent>());
     local_player_input_signature.set(engine->ecs.get_component_type_id<PhysicsComponent>());
@@ -141,6 +142,7 @@ void setup_local_player_entity(EngineCore* engine)
 
     Entity local_player = engine->ecs.create_entity();
     engine->ecs.add_component(local_player, TransformComponent{{-5, 1, 5}}); //transform for geo
+    engine->ecs.add_component(local_player, RealRotationComponent{{0, 0, 0}}); //transform for geo
 
     engine->ecs.add_component(local_player, PositionComponent{{-5, 2, -5}}); //position for camera
     engine->ecs.add_component(local_player, car_geo); //position for camera
