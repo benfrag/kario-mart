@@ -128,7 +128,7 @@ void setup_local_player_entity(EngineCore* engine)
 
 
     Entity local_player = engine->ecs.create_entity();
-    engine->ecs.add_component(local_player, TransformComponent{{-5, 0, 5}}); //transform for geo
+    engine->ecs.add_component(local_player, TransformComponent{{-5, 0.25, 5}}); //transform for geo
 
     engine->ecs.add_component(local_player, PositionComponent{{-5, 2, -5}}); //position for camera
     engine->ecs.add_component(local_player, car_geo); //position for camera

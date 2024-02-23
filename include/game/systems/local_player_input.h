@@ -53,6 +53,11 @@ public:
                 car_transform->rotation.y -= rotation_speed * dt; // yaw
             }
 
+            Vector3 new_pos;
+            new_pos = car_transform->position - forward * 5;
+            new_pos.y = car_transform->position.y + 5;
+            cam_position->position = new_pos;
+
             player_camera->clamp_rotation();
             player_camera->update_view(cam_position->position);
             player_camera->last_position = cam_position->position;
