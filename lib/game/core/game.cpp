@@ -104,6 +104,16 @@ void setup_local_player_systems(EngineCore* engine)
     engine->ecs.set_system_signature<LocalPlayerInputSystem>(local_player_input_signature);
 }
 
+void lazy_center_programmatically(std::vector<Vector3>* verts, float xoff, float zoff)
+{
+    // to be later removed
+    for (std::size_t i = 0; i < verts->size(); ++i)
+    {
+        (*verts)[i].x += xoff;
+        (*verts)[i].z += zoff;
+    }
+}
+
 void setup_local_player_entity(EngineCore* engine)
 {
     GeometryComponent car_geo;
@@ -123,12 +133,14 @@ void setup_local_player_entity(EngineCore* engine)
         { 1.0f, 0.0f, 2.0f},    {0.0f, 0.0f, 0.0f},    {1.0f, 0.0f, 0.0f },
     };
 
+    lazy_center_programmatically(&(car_geo.vertices), -0.5f, -1.f);
+
     car_geo.clr = PACK(240, 240, 248, 255);
 
 
 
     Entity local_player = engine->ecs.create_entity();
-    engine->ecs.add_component(local_player, TransformComponent{{-5, 0.25, 5}}); //transform for geo
+    engine->ecs.add_component(local_player, TransformComponent{{-5, 1, 5}}); //transform for geo
 
     engine->ecs.add_component(local_player, PositionComponent{{-5, 2, -5}}); //position for camera
     engine->ecs.add_component(local_player, car_geo); //position for camera
