@@ -104,7 +104,7 @@ void Renderer::draw_triangle(const ScreenVertex& v0, const ScreenVertex& v1, con
                 float w = CAP / area;
 
                 // Interpolate z-value
-                float pixel_z = u * v0.z + v * v1.z + w * v2.z;
+                float pixel_z = u * static_cast<float>(v0.z) + v * static_cast<float>(v1.z) + w * static_cast<float>(v2.z);
 
                 // Depth test against z-buffer
                 int index = y * width + x;

@@ -80,7 +80,7 @@ void setup_untextured_plane(EngineCore* engine, float size, float dimensions)
                 {0, 0, 0}, {indiv_size, 0, indiv_size}, {indiv_size, 0, 0},
                 {0, 0, 0}, {0, 0, indiv_size}, {indiv_size, 0, indiv_size},
             };
-            plane_geo.clr = black ? PACK(20, 20, 20, 255) : PACK(255, 0, 220, 255);
+            plane_geo.clr = black ? PACK(255, 255, 255, 255) : PACK(11, 81, 176, 255);
             black = !black;
             engine->ecs.add_component(new_plane, TransformComponent({currentx, 0, zstart}));
             engine->ecs.add_component(new_plane, plane_geo);
@@ -100,6 +100,7 @@ void setup_local_player_systems(EngineCore* engine)
     local_player_input_signature.set(engine->ecs.get_component_type_id<PositionComponent>());
     local_player_input_signature.set(engine->ecs.get_component_type_id<CameraComponent>());
     local_player_input_signature.set(engine->ecs.get_component_type_id<PhysicsComponent>());
+    local_player_input_signature.set(engine->ecs.get_component_type_id<CarPhysicsComponent>());
     local_player_input_signature.set(engine->ecs.get_component_type_id<GeometryComponent>());
 
     engine->ecs.set_system_signature<LocalPlayerInputSystem>(local_player_input_signature);
@@ -136,12 +137,14 @@ void setup_local_player_entity(EngineCore* engine)
 
     lazy_center_programmatically(&(car_geo.vertices), -0.5f, -1.f);
 
-    car_geo.clr = PACK(240, 240, 248, 255);
+//    car_geo.clr = PACK(240, 240, 248, 255);
+    car_geo.clr = PACK(255, 100, 20, 255);
 
 
 
     Entity local_player = engine->ecs.create_entity();
     engine->ecs.add_component(local_player, TransformComponent{{-5, 1, 5}}); //transform for geo
+    engine->ecs.add_component(local_player, CarPhysicsComponent{}); //transform for geo
     engine->ecs.add_component(local_player, RealRotationComponent{{0, 0, 0}}); //transform for geo
 
     engine->ecs.add_component(local_player, PositionComponent{{-5, 2, -5}}); //position for camera
@@ -182,8 +185,8 @@ void Game::setup()
 
     //have to define systems before hand for now
        
+    setup_untextured_plane(engine, 20, 5);
     setup_local_player_entity(engine);
-    setup_untextured_plane(engine, 15, 9);
 
     Entity test_cube = engine->ecs.create_entity();
     GeometryComponent cube_geometry;
@@ -203,7 +206,7 @@ void Game::setup()
         { 1.0f, 0.0f, 1.0f},    {0.0f, 0.0f, 0.0f},    {1.0f, 0.0f, 0.0f },
     };
 
-    cube_geometry.clr = PACK(255, 100, 20, 255);
+    cube_geometry.clr = PACK(243,204,10, 255);
 
     engine->ecs.add_component(test_cube, TransformComponent{{0, 5, 0}});
     engine->ecs.add_component(test_cube, cube_geometry);

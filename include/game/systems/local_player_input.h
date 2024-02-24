@@ -31,7 +31,9 @@ public:
             forward = forward.normalized();
 
             float movement_speed = 20;
+            float acceleration_rate = 5;
             float rotation_speed = 180;
+            float friction_coeff = 0.4;
 
             Vector3 new_car_pos = car_transform->position;
 //            Vector3 new_car_rot = car_transform->rotation;
@@ -42,14 +44,17 @@ public:
 
             int drift_dir = 0; // Test, need actual like timed drift etc.
             // Further if init drift on say left, should be able to press right (D) to hold the drift and kind of retain momentum rather than turning
+            car_physics->acceleration = Vector3({0, 0, 0});
             if (engine->input_manager.is_key_pressed(0x57))
             {
-                new_car_pos = new_car_pos + forward * movement_speed * dt;
+                car_physics->acceleration = forward * acceleration_rate;
+            //    new_car_pos = new_car_pos + forward * movement_speed * dt;
             }
 
             if (engine->input_manager.is_key_pressed(0x53))
             {
-                new_car_pos = new_car_pos - forward * movement_speed * dt;
+             //   new_car_pos = new_car_pos - forward * movement_speed * dt;
+                car_physics->acceleration = (forward * -1) * acceleration_rate;
             }
             
             if (engine->input_manager.is_key_pressed(0x44)) //D
@@ -70,6 +75,15 @@ public:
                 test_drift = true;
             }
 
+            car_physics->velocity = car_physics->velocity - car_physics->velocity * friction_coeff * dt;
+            car_physics->velocity = car_physics->velocity + car_physics->acceleration * dt;
+            float max_speed = 30;
+            if (car_physics->velocity.magnitude() > max_speed)
+            {
+                car_physics->velocity = car_physics->velocity.normalized() * max_speed;
+            }
+
+            new_car_pos = new_car_pos + car_physics->velocity * dt;
             car_rotation->rotation = new_real_rotation;
 
             car_transform->position = new_car_pos;
@@ -91,7 +105,7 @@ public:
 
             Vector3 new_pos;
             new_pos = car_transform->position - forward * 5;
-            new_pos.y = car_transform->position.y + 5;
+            new_pos.y = car_transform->position.y + 4;
             cam_position->position = new_pos;
 
             player_camera->pitch = -20;
