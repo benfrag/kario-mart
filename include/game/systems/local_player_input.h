@@ -29,46 +29,113 @@ public:
             forward.y = 0;
             forward.z = cos(yaw_rads) * cos(pitch_rads);
             forward = forward.normalized();
+            Vector3 right = Vector3::new_cross(Vector3(0, 1, 0), forward).normalized();
 
-            float movement_speed = 20;
-            float acceleration_rate = 5;
-            float rotation_speed = 180;
-            float friction_coeff = 0.4;
+            // constants, we can #define later
+            float max_speed = 35;
+            float accel_rate = 15;
+            float friction_coeff = 0.3;
 
-            Vector3 new_car_pos = car_transform->position;
-//            Vector3 new_car_rot = car_transform->rotation;
-            Vector3 new_real_rotation = car_rotation->rotation;
+            Vector3 result_car_pos = car_transform->position;
+            Vector3 result_real_car_rot = car_rotation->rotation; // real rotation
 
-            //have real rotation and fake rotation for car, if not drifting fake/render rotation should interpolate to try and match real rotation (or overshoot), if drifting fake rotation will stay at an angle to real rotation
-
-
-            int drift_dir = 0; // Test, need actual like timed drift etc.
-            // Further if init drift on say left, should be able to press right (D) to hold the drift and kind of retain momentum rather than turning
-            car_physics->acceleration = Vector3({0, 0, 0});
-            if (engine->input_manager.is_key_pressed(0x57))
-            {
-                car_physics->acceleration = forward * acceleration_rate;
-            //    new_car_pos = new_car_pos + forward * movement_speed * dt;
-            }
-
-            if (engine->input_manager.is_key_pressed(0x53))
-            {
-             //   new_car_pos = new_car_pos - forward * movement_speed * dt;
-                car_physics->acceleration = (forward * -1) * acceleration_rate;
-            }
+            float frame_speed = car_physics->velocity.magnitude(); // pre input
             
+            car_physics->acceleration = Vector3({0, 0, 0});
+
+            if (engine->input_manager.is_key_pressed(0x57)) // W
+            {
+                car_physics->acceleration = car_physics->acceleration + forward * accel_rate;
+            }
+
+            if (engine->input_manager.is_key_pressed(0x53)) // S
+            {
+                car_physics->acceleration = car_physics->acceleration - forward * accel_rate;
+            }
+            float rotation_speed = 40;
+            rotation_speed = 40 + ((180 - 40) * (1 - (frame_speed / max_speed)));
+            //at 0 should be 180, at max_speed should be 40
+
             if (engine->input_manager.is_key_pressed(0x44)) //D
             {
-                new_real_rotation.y += rotation_speed * dt; // yaw
-                drift_dir = 2;
+                result_real_car_rot.y += rotation_speed * dt;
             }
            
             if (engine->input_manager.is_key_pressed(0x41)) //A
             {
-                new_real_rotation.y -= rotation_speed * dt; // yaw
-                drift_dir = 1;
+                result_real_car_rot.y -= rotation_speed * dt;
+            }
+            
+            
+            yaw_rads = result_real_car_rot.y * (3.14159 / 180.f);
+            pitch_rads = result_real_car_rot.x * (3.14159 / 180.f);
+
+            Vector3 new_forward;
+            new_forward.x = sin(yaw_rads) * cos(pitch_rads);
+            new_forward.y = 0;
+            new_forward.z = cos(yaw_rads) * cos(pitch_rads);
+            new_forward = new_forward.normalized();
+            float directionality = car_physics->velocity.normalized().dot(new_forward);
+            Vector3 target_direction = directionality >= 0 ? new_forward : new_forward * -1;
+            car_physics->velocity = target_direction * car_physics->velocity.magnitude();
+
+            // set the new velocity
+            car_physics->velocity = car_physics->velocity - car_physics->velocity * friction_coeff * dt;
+            car_physics->velocity = car_physics->velocity + car_physics->acceleration * dt;
+            if (car_physics->velocity.magnitude() > max_speed) car_physics->velocity = car_physics->velocity.normalized() * max_speed;
+
+            // set position using velocity
+            result_car_pos = result_car_pos + car_physics->velocity * dt;
+
+
+            // setters for after rotation
+            car_rotation->rotation = result_real_car_rot; // set real rotation
+            car_transform->rotation = result_real_car_rot; // set fake rotation, this should be interped
+            car_transform->position = result_car_pos;
+
+            float interp_yaw = result_real_car_rot.y;
+
+            // set camera to follow car rotation
+            Vector3 new_camera_pos = car_transform->position - forward * 5;
+            new_camera_pos.y = car_transform->position.y + 4;
+            cam_position->position = new_camera_pos;
+            player_camera->pitch = -20;
+            player_camera->yaw = interp_yaw;
+            player_camera->clamp_rotation();
+            player_camera->update_view(cam_position->position);
+            player_camera->last_position = cam_position->position;
+
+/*
+            float movement_speed = 20;
+            float acceleration_rate = 15;
+            float rotation_speed = 180;
+            float max_speed = 35;
+            float friction_coeff = 0.3;
+
+            Vector3 new_car_pos = car_transform->position;
+            Vector3 new_real_rotation = car_rotation->rotation;
+
+            //have real rotation and fake rotation for car, if not drifting
+            //fake/render rotation should interpolate to try and match real
+            //rotation (or overshoot), if drifting fake rotation will stay at an angle to real rotation
+
+            float speed = car_physics->velocity.magnitude();
+            float acceleration_mod= 5.0f - (speed / max_speed);
+            if (acceleration_mod < 0.2f)
+                acceleration_mod = 0.2f;
+
+            int drift_dir = 0;
+            car_physics->acceleration = Vector3({0, 0, 0});
+            if (engine->input_manager.is_key_pressed(0x57))
+            {
+                car_physics->acceleration = forward * acceleration_rate * acceleration_mod;
             }
 
+            if (engine->input_manager.is_key_pressed(0x53))
+            {
+                car_physics->acceleration = (forward * -1) * acceleration_rate;
+            }
+           
             bool test_drift = false;
             if (engine->input_manager.is_key_pressed(VK_SHIFT))
             {
@@ -77,10 +144,43 @@ public:
 
             car_physics->velocity = car_physics->velocity - car_physics->velocity * friction_coeff * dt;
             car_physics->velocity = car_physics->velocity + car_physics->acceleration * dt;
-            float max_speed = 30;
             if (car_physics->velocity.magnitude() > max_speed)
             {
                 car_physics->velocity = car_physics->velocity.normalized() * max_speed;
+            }
+ 
+            float minTurningRadius = 5.0f; // Minimum turning radius
+            float maxTurningRadius = 20.0f; // Maximum turning radius
+            float currentSpeed = car_physics->velocity.magnitude();
+            float turningRadius;
+            float someSpeedFactor = 1.f;
+            if (currentSpeed > 0) {
+                float calculatedRadius = maxTurningRadius / (currentSpeed / someSpeedFactor + 1);
+                if (calculatedRadius < minTurningRadius) {
+                    turningRadius = minTurningRadius;
+                } else {
+                    turningRadius = calculatedRadius;
+                }
+            } else {
+                turningRadius = maxTurningRadius;
+            }
+
+            float turningAngle = (currentSpeed / turningRadius) * dt; // dt is the delta time for the frame
+
+            if (engine->input_manager.is_key_pressed(0x44)) //D
+            {
+                new_real_rotation.y += rotation_speed * dt; // yaw
+//                new_real_rotation.y += adjusted_rot_speed * dt; // yaw
+//        new_real_rotation.y += turningAngle * (180.0f / 3.14159); // Convert from radians to degrees if needed
+                drift_dir = 2;
+            }
+           
+            if (engine->input_manager.is_key_pressed(0x41)) //A
+            {
+                new_real_rotation.y -= rotation_speed * dt; // yaw
+//                new_real_rotation.y -= adjusted_rot_speed * dt; // yaw
+//        new_real_rotation.y -= turningAngle * (180.0f / 3.14159); // Convert from radians to degrees if needed
+                drift_dir = 1;
             }
 
             new_car_pos = new_car_pos + car_physics->velocity * dt;
@@ -113,6 +213,7 @@ public:
             player_camera->clamp_rotation();
             player_camera->update_view(cam_position->position);
             player_camera->last_position = cam_position->position;
+            */
         }
 /*        EngineCore* engine = static_cast<EngineCore*>(engine_core);
 
