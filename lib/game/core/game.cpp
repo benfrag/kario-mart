@@ -213,8 +213,21 @@ void create_item_box(EngineCore* engine, Vector3 position)
     float rot_time = 10;
     LoopingFlipGenericAnimTask* rotation_anim = new LoopingFlipGenericAnimTask(&(engine->ecs.get_component<TransformComponent>(item_box)->rotation.y), 0, 360, rot_time); 
     LoopingFlipGenericAnimTask* rotation_anim2 = new LoopingFlipGenericAnimTask(&(engine->ecs.get_component<TransformComponent>(item_box)->rotation.x), 0, 360, rot_time); 
+//    ColourInterpTask* col_task = new ColourInterpTask(&(engine->ecs.get_component<GeometryComponent>(item_box)->clr), RGB{233,98,95}, RGB{225,126,72}, 5); 
+    std::vector<RGB> box_cols = {
+        RGB{233,98,95},
+        RGB{225,126,72},
+        RGB{241,224,119},
+        RGB{170,248,132},
+        RGB{113,225,241},
+        RGB{105,109,237},
+        RGB{211,98,236},
+    };
+
+    LoopColourInterpTask* col_task = new LoopColourInterpTask(&(engine->ecs.get_component<GeometryComponent>(item_box)->clr), box_cols, 1); 
     engine->ecs.get_component<AnimationComponent>(item_box)->add_task(movement_anim);
     engine->ecs.get_component<AnimationComponent>(item_box)->add_task(rotation_anim);
+    engine->ecs.get_component<AnimationComponent>(item_box)->add_task(col_task);
     engine->ecs.get_component<AnimationComponent>(item_box)->add_task(rotation_anim2);
 }
 
