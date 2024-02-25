@@ -43,7 +43,7 @@ While the engine exposes some basic components and systems found in /include/cor
 
 This project uses a somewhat unconventional folder structure with src containing only main.cpp with the entry point, and /lib and /include for holding (mostly) implementation (.cpp) and declarations (.h) respectively. /lib for implementation was originally used to retain modular structure for the engine, but ends up holding both implementation for the engine and the game.
 
-[/src/main.cpp](main/src/main.cpp)
+[/src/main.cpp](src/main.cpp)
 This contains the entry point and the creation of the EngineCore and Game instance. The resolution (both window resolution and rendering resolution) is configured, the game is setup and the engine starts running. 
 
 ```
