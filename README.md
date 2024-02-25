@@ -89,6 +89,8 @@ int main()
 [/lib/game/core/game.cpp](lib/game/core/game.cpp)  
 This contains the implementation of the setting up of game logic, creation of entities including the player, the track, some item boxes, the notifying of the main camera to the engine, and all of the systems that will act on entities are registered here.
 
+The code is written solely for Windows as it heavily uses windows api. CMake is configured to use Clang++ but MSVC or GCC could also be used.
+
 All game specific components and systems are declared or implemented in [/include/game/components](include/game/components) and [/include/game/systems](include/game/systems)
 All engine basic components and systems are declared or implemented in [/include/engine/core/base_components](include/engine/core/base_components) and [/include/engine/core/base_systems](include/engine/core/base_systems)
 

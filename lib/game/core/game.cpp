@@ -234,7 +234,7 @@ void create_item_box(EngineCore* engine, Vector3 position)
 
 void create_track(EngineCore* engine)
 {
-    bool black = false;
+    /*bool black = false;
     float size = 500;
     int num_planes = 80;
     float indiv_size = size / num_planes;
@@ -258,6 +258,52 @@ void create_track(EngineCore* engine)
         }
 
     }
+    */
+    bool black = false;
+    float size = 250;
+    int num_planes = 40;
+    float indiv_size = size / num_planes;
+    float width = 20;
+    for (int x = 0; x < num_planes; ++x)
+    {
+        float zstart = 10 + (indiv_size * x);
+        for (int z = 0; z < 1; ++z)
+        {
+            float currentx = -(width / 2.f);
+            Entity new_plane = engine->ecs.create_entity();
+            GeometryComponent plane_geo;
+            plane_geo.vertices = {
+                {0, 0, 0}, {width, 0, indiv_size}, {width, 0, 0},
+                {0, 0, 0}, {0, 0, indiv_size}, {width, 0, indiv_size},
+            };
+            plane_geo.clr = black ? PACK(204,204,204, 255) : PACK(128,126,120,255);
+            black = !black;
+            engine->ecs.add_component(new_plane, TransformComponent({currentx, 0, zstart}));
+            engine->ecs.add_component(new_plane, plane_geo);
+        }
+
+    }
+
+    for (int x = 0; x < num_planes; ++x)
+    {
+        float zstart = -10 - (indiv_size * (x + 1));
+        for (int z = 0; z < 1; ++z)
+        {
+            float currentx = -(width / 2.f);
+            Entity new_plane = engine->ecs.create_entity();
+            GeometryComponent plane_geo;
+            plane_geo.vertices = {
+                {0, 0, 0}, {width, 0, indiv_size}, {width, 0, 0},
+                {0, 0, 0}, {0, 0, indiv_size}, {width, 0, indiv_size},
+            };
+            plane_geo.clr = black ? PACK(204,204,204, 255) : PACK(128,126,120,255);
+            black = !black;
+            engine->ecs.add_component(new_plane, TransformComponent({currentx, 0, zstart}));
+            engine->ecs.add_component(new_plane, plane_geo);
+        }
+
+    }
+
 
     for (int i = 0; i < 5; ++i)
     {
@@ -302,6 +348,7 @@ void Game::setup()
 
     create_item_box(engine, {0, 1, 0});
 
+    /*
     Entity test_cube = engine->ecs.create_entity();
     GeometryComponent cube_geometry;
 
@@ -324,6 +371,7 @@ void Game::setup()
 
     engine->ecs.add_component(test_cube, TransformComponent{{0, 5, 0}});
     engine->ecs.add_component(test_cube, cube_geometry);
+    */
 /*
     Entity local_player = engine->ecs.create_entity();
     engine->ecs.add_component(local_player, TransformComponent{{-5, 0, -5}});

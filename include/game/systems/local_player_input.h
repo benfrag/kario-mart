@@ -114,7 +114,8 @@ public:
             Vector3 vel_rot_test = {0, 0, 0};
             vel_rot_test.y = atan2(car_physics->velocity.normalized().x, car_physics->velocity.normalized().z) * 180.f / 3.14159;
 
-            car_transform->rotation = vel_rot_test; // set fake rotation, this should be interped
+//            car_transform->rotation = vel_rot_test; // set fake rotation, this should be interped
+            car_transform->rotation = result_real_car_rot; // set fake rotation, this should be interped
             car_transform->position = result_car_pos;
 
             float interp_yaw = result_real_car_rot.y;
