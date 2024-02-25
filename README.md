@@ -36,10 +36,82 @@ The engine uses an Entity Component System (ECS) architecture which allows for t
 
 In terms of rendering the world to the screen/back buffer, geometry is constructed purely of vertices (without indices) and a corresponding colour for that geometry (for simplicity's sake, as well as the limitations of the CPU, texturing, lighting and shadows are not implemented). The ECS basically has an engine system for rendering geometry, which it does so by inefficiently applying position transformations and rotations to the original vertices, adding these new 'render vertices' to a queue which gets handled in the EngineCore's run cycle after the ECS has handled all systems for that frame. This queue originally had the intention of being multi-threaded but remains single-threaded, the implementation can be found in /lib/engine/core/render_manager.cpp. From here the vertices are handled in batches of three, and a translation from 3D world to 2D screen space using the combined view projection matrix of the main camera (which is created as a component of a game entity and specified to the engine's instance of the renderer) is performed. From here, the 'primitive renderer' allows for triangle rasterization by forming edge equations from the transformed screen coordinates, a simple form of z buffering is implemented which is unsuccessful at times. SIMD AVX2 intrinsics are used as a modern work around for the CPU burden.
 
+While the engine exposes some basic components and systems found in /include/core/base_components and /base_systems, it is up to the game to use these systems. Otherwise, game specific components and systems are implemented in include/game/components and /systems. The creation of entities happens in /lib/game/core/game.cpp, this file is particularly procedural rather than object oriented for simplicity, the game uses the engine directly creating verbose code, this could be solved by a wrapper for engine interaction.
+
 
 ## Brief Documentation
 
 This project uses a somewhat unconventional folder structure with src containing only main.cpp with the entry point, and /lib and /include for holding (mostly) implementation (.cpp) and declarations (.h) respectively. /lib for implementation was originally used to retain modular structure for the engine, but ends up holding both implementation for the engine and the game.
+
+/src/main.cpp
+This contains the entry point and the creation of the EngineCore and Game instance. The resolution (both window resolution and rendering resolution) is configured, the game is setup and the engine starts running. 
+
+```
+#include <windows.h>
+#include <iostream>
+
+#include "engine/core/engine.h"
+#include "game/core/game.h"
+
+int main()
+{
+    EngineCore engine;
+    Game game(&engine);
+
+    try
+    {
+        WindowConfig window_config;
+        window_config.window_name = L"Kario Mart 64";
+
+        window_config.width = 320;
+        window_config.height = 240;
+
+        window_config.window_width = 1920;
+        window_config.window_height = 1080;
+        engine.configure_window(window_config);
+        engine.initialize();
+
+        game.setup();
+
+        engine.run();
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "An exception occured: " << e.what() << std::endl;
+    }
+
+    engine.shutdown();
+
+    return 0;
+}
+```
+
+/lib/game/core/game.cpp
+This contains the implementation of the setting up of game logic, creation of entities including the player, the track, some item boxes, the notifying of the main camera to the engine, and all of the systems that will act on entities are registered here.
+
+All game specific components and systems are declared or implemented in /include/game/components and /include/game/systems
+All engine basic components and systems are declared or implemented in /include/engine/core/base_components and /include/engine/core/base_systems
+
+/include/engine/core/engine.h
+/lib/engine/core/engine.cpp
+This is the implementation of EngineCore, which holds the ECSController and provides the run method which is the main loop for both updating and rendering the game. It holds both RenderManager and Renderer for rendering.
+
+Rendering
+/include/engine/renderer/renderer.h
+This is the 'primitive' renderer with member functions to manipulate the back buffer, it also provides cycle_start and cycle_end which handle the render cycle, clearing the buffers and swapping the buffers respectively.
+
+/include/engine/core/render_manager.h
+This is the RenderManager class which allows for the rendering of geometry by containing the main view projection matrix, applying transformations to geometry in the render queue and then using the primitive renderer for triangle rasterization.
+
+/include/engine/window_manager/window_manager.h
+The window manager works in tandem with the renderers to display the front buffer in the window's client area.
+
+
+/include/engine/math/..
+provides basic classes for vectors and matrices.
+
+There are some old files in the repo such as camera.h prior to the implementation of ECS.
+
 
 ![High res 1920x1080 rasterizing.](https://github.com/benfrag/kario-mart/blob/main/high_res.png?raw=true)
 
