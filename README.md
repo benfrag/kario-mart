@@ -115,6 +115,6 @@ provides basic classes for vectors and matrices.
 There are some old files in the repo such as camera.h prior to the implementation of ECS.
 
 
-![High res 1920x1080 rasterizing.](https://github.com/benfrag/kario-mart/blob/main/high_res.png?raw=true)
+![Game Screenshot 320x240.](https://github.com/benfrag/kario-mart/blob/main/game_screenshot.png?raw=true)
 
 320x240 used in source for fps.
