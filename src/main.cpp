@@ -24,10 +24,10 @@ int main()
 //        window_config.width = 1920;
 //        window_config.height = 1080;
 
-        window_config.window_width = 1920;
-        window_config.window_height = 1080;
-        //window_config.width = 320;
-        //window_config.height = 240;
+        //window_config.window_width = 1920;
+        //window_config.window_height = 1080;
+        window_config.window_width = 1280;
+        window_config.window_height = 960;
         engine.configure_window(window_config);
         engine.initialize();
 

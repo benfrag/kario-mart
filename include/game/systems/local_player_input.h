@@ -53,7 +53,9 @@ public:
                 car_physics->acceleration = car_physics->acceleration - forward * accel_rate;
             }
             float rotation_speed = 40;
-            rotation_speed = 40 + ((180 - 40) * (1 - (frame_speed / max_speed)));
+            float rot_max = 180;
+            float rot_min = 90;
+            rotation_speed = rot_min + ((rot_max - rot_min) * (1 - (frame_speed / max_speed)));
             //at 0 should be 180, at max_speed should be 40
 
             if (engine->input_manager.is_key_pressed(0x44)) //D

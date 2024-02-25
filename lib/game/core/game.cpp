@@ -231,6 +231,35 @@ void create_item_box(EngineCore* engine, Vector3 position)
     engine->ecs.get_component<AnimationComponent>(item_box)->add_task(rotation_anim2);
 }
 
+
+void create_track(EngineCore* engine)
+{
+    bool black = false;
+    float size = 500;
+    int num_planes = 80;
+    float indiv_size = size / num_planes;
+    float width = 20;
+    for (int x = 0; x < num_planes; ++x)
+    {
+        float zstart = -(size / 2.f) + (indiv_size * x);
+        for (int z = 0; z < 1; ++z)
+        {
+            float currentx = -(width / 2.f);
+            Entity new_plane = engine->ecs.create_entity();
+            GeometryComponent plane_geo;
+            plane_geo.vertices = {
+                {0, 0, 0}, {width, 0, indiv_size}, {width, 0, 0},
+                {0, 0, 0}, {0, 0, indiv_size}, {width, 0, indiv_size},
+            };
+            plane_geo.clr = black ? PACK(204,204,204, 255) : PACK(128,126,120,255);
+            black = !black;
+            engine->ecs.add_component(new_plane, TransformComponent({currentx, 0, zstart}));
+            engine->ecs.add_component(new_plane, plane_geo);
+        }
+
+    }
+}
+
 void Game::setup()
 {
 /*    auto physics_system = engine->ecs.register_system<PhysicsSystem>();
@@ -263,6 +292,7 @@ void Game::setup()
     //have to define systems before hand for now
        
     setup_untextured_plane(engine, 20, 5);
+    create_track(engine);
     setup_local_player_entity(engine);
 
     create_item_box(engine, {0, 1, 0});
