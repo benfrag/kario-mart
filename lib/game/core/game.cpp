@@ -258,6 +258,11 @@ void create_track(EngineCore* engine)
         }
 
     }
+
+    for (int i = 0; i < 5; ++i)
+    {
+        create_item_box(engine, Vector3{-10.f / 2.f + 2.5f * static_cast<float>(i), 0, 30});
+    }
 }
 
 void Game::setup()
