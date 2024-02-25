@@ -77,7 +77,22 @@ public:
             new_forward = new_forward.normalized();
             float directionality = car_physics->velocity.normalized().dot(new_forward);
             Vector3 target_direction = directionality >= 0 ? new_forward : new_forward * -1;
+            // implement lerping
+//            car_physics->velocity = target_direction * car_physics->velocity.magnitude();
+//            car_physics->velocity = Vector3::lerp(car_physics->velocity, target_direction, traction) * car_physics->velocity.magnitude();
+            
+           /* float deg_change = Vector3::angle_diff(car_physics->velocity.normalized(), target_direction);
+            float changeThisFrame = deg_change * 0.5 * dt;
+            car_physics->velocity = Vector3::rotateAroundAxis(car_physics->velocity.normalized(), Vector3(0, 1, 0), changeThisFrame) * car_physics->velocity.magnitude();
+            //Vector3 lerped_forward = Vector3::lerp(car_physics->velocity, target_direction, deg_change);
+            */
+
+//            Vector3 targetVelocity = Vector3::slerp(car_physics->velocity, target_direction * car_physics->velocity.magnitude(), 0.5);
+//car_physics->velocity = targetVelocity;
+
+
             car_physics->velocity = target_direction * car_physics->velocity.magnitude();
+
 
             // set the new velocity
             car_physics->velocity = car_physics->velocity - car_physics->velocity * friction_coeff * dt;
@@ -90,7 +105,12 @@ public:
 
             // setters for after rotation
             car_rotation->rotation = result_real_car_rot; // set real rotation
-            car_transform->rotation = result_real_car_rot; // set fake rotation, this should be interped
+//            car_transform->rotation = result_real_car_rot; // set fake rotation, this should be interped
+
+            Vector3 vel_rot_test = {0, 0, 0};
+            vel_rot_test.y = atan2(car_physics->velocity.normalized().x, car_physics->velocity.normalized().z) * 180.f / 3.14159;
+
+            car_transform->rotation = vel_rot_test; // set fake rotation, this should be interped
             car_transform->position = result_car_pos;
 
             float interp_yaw = result_real_car_rot.y;
