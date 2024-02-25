@@ -43,7 +43,7 @@ While the engine exposes some basic components and systems found in /include/cor
 
 This project uses a somewhat unconventional folder structure with src containing only main.cpp with the entry point, and /lib and /include for holding (mostly) implementation (.cpp) and declarations (.h) respectively. /lib for implementation was originally used to retain modular structure for the engine, but ends up holding both implementation for the engine and the game.
 
-[/src/main.cpp](src/main.cpp)
+[/src/main.cpp](src/main.cpp)  
 This contains the entry point and the creation of the EngineCore and Game instance. The resolution (both window resolution and rendering resolution) is configured, the game is setup and the engine starts running. 
 
 ```
@@ -86,28 +86,28 @@ int main()
 }
 ```
 
-/lib/game/core/game.cpp
+[/lib/game/core/game.cpp](lib/game/core/game.cpp)  
 This contains the implementation of the setting up of game logic, creation of entities including the player, the track, some item boxes, the notifying of the main camera to the engine, and all of the systems that will act on entities are registered here.
 
-All game specific components and systems are declared or implemented in /include/game/components and /include/game/systems
-All engine basic components and systems are declared or implemented in /include/engine/core/base_components and /include/engine/core/base_systems
+All game specific components and systems are declared or implemented in [/include/game/components](include/game/components) and [/include/game/systems](include/game/systems)
+All engine basic components and systems are declared or implemented in [/include/engine/core/base_components](include/engine/core/base_components) and [/include/engine/core/base_systems](include/engine/core/base_systems)
 
-/include/engine/core/engine.h
-/lib/engine/core/engine.cpp
+[/include/engine/core/engine.h](include/engine/core/engine.h)  
+[/lib/engine/core/engine.cpp](lib/engine/core/engine.cpp)  
 This is the implementation of EngineCore, which holds the ECSController and provides the run method which is the main loop for both updating and rendering the game. It holds both RenderManager and Renderer for rendering.
 
-Rendering
-/include/engine/renderer/renderer.h
+Rendering  
+[/include/engine/renderer/renderer.h](include/engine/renderer/renderer.h)  
 This is the 'primitive' renderer with member functions to manipulate the back buffer, it also provides cycle_start and cycle_end which handle the render cycle, clearing the buffers and swapping the buffers respectively.
 
-/include/engine/core/render_manager.h
+[/include/engine/core/render_manager.h](include/engine/core/render_manager.h)  
 This is the RenderManager class which allows for the rendering of geometry by containing the main view projection matrix, applying transformations to geometry in the render queue and then using the primitive renderer for triangle rasterization.
 
-/include/engine/window_manager/window_manager.h
+[/include/engine/window_manager/window_manager.h](include/engine/window_manager/window_manager.h)  
 The window manager works in tandem with the renderers to display the front buffer in the window's client area.
 
 
-/include/engine/math/..
+[/include/engine/math/](include/engine/math/)...  
 provides basic classes for vectors and matrices.
 
 There are some old files in the repo such as camera.h prior to the implementation of ECS.
