@@ -5,6 +5,7 @@
 #include "engine/core/base_components/transform_component.h"
 #include "engine/core/base_components/camera_component.h"
 #include "engine/core/base_components/physics_component.h"
+#include "engine/core/base_components/animation_component.h"
 
 
 #endif

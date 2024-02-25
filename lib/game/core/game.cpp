@@ -106,13 +106,14 @@ void setup_local_player_systems(EngineCore* engine)
     engine->ecs.set_system_signature<LocalPlayerInputSystem>(local_player_input_signature);
 }
 
-void lazy_center_programmatically(std::vector<Vector3>* verts, float xoff, float zoff)
+void lazy_center_programmatically(std::vector<Vector3>* verts, float xoff, float zoff, float yoff = 0)
 {
     // to be later removed
     for (std::size_t i = 0; i < verts->size(); ++i)
     {
         (*verts)[i].x += xoff;
         (*verts)[i].z += zoff;
+        (*verts)[i].y += yoff;
     }
 }
 
@@ -162,6 +163,61 @@ void setup_local_player_entity(EngineCore* engine)
 
 }
 
+
+void lazy_scale(std::vector<Vector3>* verts, float scale)
+{
+    // to be later removed
+    for (std::size_t i = 0; i < verts->size(); ++i)
+    {
+        (*verts)[i].x *= scale;
+        (*verts)[i].y *= scale;
+        (*verts)[i].z *= scale;
+    }
+}
+
+
+void create_item_box(EngineCore* engine, Vector3 position)
+{
+    Entity item_box = engine->ecs.create_entity();
+    GeometryComponent cube_geometry;
+
+    cube_geometry.vertices = {
+        { 0.0f, 0.0f, 0.0f},    {0.0f, 1.0f, 0.0f},    {1.0f, 1.0f, 0.0f },
+        { 0.0f, 0.0f, 0.0f},    {1.0f, 1.0f, 0.0f},    {1.0f, 0.0f, 0.0f },
+        { 1.0f, 0.0f, 0.0f},    {1.0f, 1.0f, 0.0f},    {1.0f, 1.0f, 1.0f },
+        { 1.0f, 0.0f, 0.0f},    {1.0f, 1.0f, 1.0f},    {1.0f, 0.0f, 1.0f },
+        { 1.0f, 0.0f, 1.0f},    {1.0f, 1.0f, 1.0f},    {0.0f, 1.0f, 1.0f },
+        { 1.0f, 0.0f, 1.0f},    {0.0f, 1.0f, 1.0f},    {0.0f, 0.0f, 1.0f },
+        { 0.0f, 0.0f, 1.0f},    {0.0f, 1.0f, 1.0f},    {0.0f, 1.0f, 0.0f },
+        { 0.0f, 0.0f, 1.0f},    {0.0f, 1.0f, 0.0f},    {0.0f, 0.0f, 0.0f },
+        { 0.0f, 1.0f, 0.0f},    {0.0f, 1.0f, 1.0f},    {1.0f, 1.0f, 1.0f },
+        { 0.0f, 1.0f, 0.0f},    {1.0f, 1.0f, 1.0f},    {1.0f, 1.0f, 0.0f },
+        { 1.0f, 0.0f, 1.0f},    {0.0f, 0.0f, 1.0f},    {0.0f, 0.0f, 0.0f },
+        { 1.0f, 0.0f, 1.0f},    {0.0f, 0.0f, 0.0f},    {1.0f, 0.0f, 0.0f },
+    };
+
+    lazy_scale(&(cube_geometry.vertices), 1.5);
+    lazy_center_programmatically(&(cube_geometry.vertices), -0.75, -0.75, -0.75);
+
+    cube_geometry.clr = PACK(243,204,10, 255);
+
+    TransformComponent transform(position);
+    AnimationComponent animation;
+
+    engine->ecs.add_component(item_box, transform);
+    engine->ecs.add_component(item_box, animation);
+    engine->ecs.add_component(item_box, cube_geometry);
+
+    
+    LoopingFlipGenericAnimTask* movement_anim = new LoopingFlipGenericAnimTask(&(engine->ecs.get_component<TransformComponent>(item_box)->position.y), 2, 2.25, 0.5); 
+    float rot_time = 10;
+    LoopingFlipGenericAnimTask* rotation_anim = new LoopingFlipGenericAnimTask(&(engine->ecs.get_component<TransformComponent>(item_box)->rotation.y), 0, 360, rot_time); 
+    LoopingFlipGenericAnimTask* rotation_anim2 = new LoopingFlipGenericAnimTask(&(engine->ecs.get_component<TransformComponent>(item_box)->rotation.x), 0, 360, rot_time); 
+    engine->ecs.get_component<AnimationComponent>(item_box)->add_task(movement_anim);
+    engine->ecs.get_component<AnimationComponent>(item_box)->add_task(rotation_anim);
+    engine->ecs.get_component<AnimationComponent>(item_box)->add_task(rotation_anim2);
+}
+
 void Game::setup()
 {
 /*    auto physics_system = engine->ecs.register_system<PhysicsSystem>();
@@ -172,6 +228,14 @@ void Game::setup()
 
     engine->ecs.set_system_signature<PhysicsSystem>(physics_signature);
 */
+
+
+    auto animation_system = engine->ecs.register_system<AnimationSystem>();
+
+    Signature animation_signature;
+    animation_signature.set(engine->ecs.get_component_type_id<AnimationComponent>());
+
+    engine->ecs.set_system_signature<AnimationSystem>(animation_signature);
 
     setup_local_player_systems(engine);
 
@@ -187,6 +251,8 @@ void Game::setup()
        
     setup_untextured_plane(engine, 20, 5);
     setup_local_player_entity(engine);
+
+    create_item_box(engine, {0, 1, 0});
 
     Entity test_cube = engine->ecs.create_entity();
     GeometryComponent cube_geometry;

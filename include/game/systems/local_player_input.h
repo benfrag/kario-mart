@@ -77,6 +77,9 @@ public:
             new_forward = new_forward.normalized();
             float directionality = car_physics->velocity.normalized().dot(new_forward);
             Vector3 target_direction = directionality >= 0 ? new_forward : new_forward * -1;
+            car_physics->velocity = target_direction * car_physics->velocity.magnitude();
+
+
             // implement lerping
 //            car_physics->velocity = target_direction * car_physics->velocity.magnitude();
 //            car_physics->velocity = Vector3::lerp(car_physics->velocity, target_direction, traction) * car_physics->velocity.magnitude();
@@ -91,7 +94,6 @@ public:
 //car_physics->velocity = targetVelocity;
 
 
-            car_physics->velocity = target_direction * car_physics->velocity.magnitude();
 
 
             // set the new velocity
