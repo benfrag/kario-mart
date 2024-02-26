@@ -60,7 +60,6 @@ struct CameraComponent
     CameraComponent()
     {
         projection_matrix = Matrix4::create_perspective(45.0f, 800.f / 600.f, 0.1f, 100.f);
-        //guessing that constructor is called when assigning in array, then data from the old instance is moved into the new instance.
     }
 };
 

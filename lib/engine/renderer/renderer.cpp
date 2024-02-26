@@ -53,7 +53,8 @@ int Renderer::get_height()
 
 void Renderer::cycle_start()
 {
-    std::fill_n(back_buffer, width * height, 0xFF000000);
+//    std::fill_n(back_buffer, width * height, 0xFF000000);
+    std::fill_n(back_buffer, width * height, 0xFFb7c9e2);
     std::fill_n(z_buffer, width * height, std::numeric_limits<float>::max());
 }
 
