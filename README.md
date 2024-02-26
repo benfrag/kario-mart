@@ -3,7 +3,7 @@
 Submitted for extension assignment for 41039.
 
 video showcase:  
-[![showcase on youtube](http://img.youtube.com/vi/GtnzE2LabZM/0.jpg)](http://www.youtube.com/watch?v=GtnzE2LabZM "Showcase")
+youtube link: [http://www.youtube.com/watch?v=GtnzE2LabZM](http://www.youtube.com/watch?v=GtnzE2LabZM)
 
 ## What is this project?
 This project was undertaken purely as an educational pursuit for my own further understanding of larger style project architecture and some of the underlying complexities of 3D rendering - I have undertaken similar projects before using Direct3D9, this project is new territory as there is no usage of external rendering libraries.
