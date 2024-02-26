@@ -19,7 +19,6 @@ void PhysicsSystem::update(void* engine_core, float dt)
             float _dot = Vector3::new_dot(normalized_velocity, normalized_acceleration);
             Vector3 parallel = normalized_acceleration * _dot;
 /*
-            std::cout.precision(17);
             std::cout << "parallel " << parallel.x << " " << parallel.y << " " << parallel.z << std::endl;
             std::cout << "velocity " << normalized_velocity.x << " " << normalized_velocity.y << " " << normalized_velocity.z << std::endl;
             std::cout << "n accela " << normalized_acceleration.x << " " << normalized_acceleration.y << " " << normalized_acceleration.z << std::endl;

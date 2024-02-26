@@ -86,44 +86,6 @@ public:
         return acos(dot_prod);
     }
 
-    static Vector3 slerp(Vector3 start, Vector3 end, float percent) {
-        float dot = start.normalized().dot(end.normalized());
-        dot = fmax(fmin(dot, 1.0f), -1.0f); // Clamp dot product to be within acos range
-        float theta = acos(dot) * percent;
-        Vector3 relativeVec = (end - start * dot).normalized(); // Orthogonal vector
-        return start * cos(theta) + relativeVec * sin(theta);
-    }
-
-    
-// Function to rotate a vector around an axis by a given angle
-static Vector3 rotateAroundAxis(const Vector3& v, const Vector3& axis, float angle) {
-    // Normalize the axis
-    float axisLength = sqrt(axis.x * axis.x + axis.y * axis.y + axis.z * axis.z);
-    Vector3 unitAxis = {axis.x / axisLength, axis.y / axisLength, axis.z / axisLength};
-
-    // Calculate the cross product (v x axis)
-    Vector3 crossProduct = {
-        v.y * unitAxis.z - v.z * unitAxis.y,
-        v.z * unitAxis.x - v.x * unitAxis.z,
-        v.x * unitAxis.y - v.y * unitAxis.x
-    };
-
-    // Calculate the dot product (v . axis)
-    float dotProduct = v.x * unitAxis.x + v.y * unitAxis.y + v.z * unitAxis.z;
-
-    // Calculate the rotated vector using Rodrigues' rotation formula
-    Vector3 part1 = {v.x * cos(angle), v.y * cos(angle), v.z * cos(angle)};
-    Vector3 part2 = {crossProduct.x * sin(angle), crossProduct.y * sin(angle), crossProduct.z * sin(angle)};
-    Vector3 part3 = {unitAxis.x * dotProduct * (1 - cos(angle)),
-                     unitAxis.y * dotProduct * (1 - cos(angle)),
-                     unitAxis.z * dotProduct * (1 - cos(angle))};
-
-    // Combine all parts to get the final rotated vector
-    Vector3 rotatedVector = {part1.x + part2.x + part3.x, part1.y + part2.y + part3.y, part1.z + part2.z + part3.z};
-
-    return rotatedVector;
-}
-
     float magnitude();
     Vector3 normalized();
 };

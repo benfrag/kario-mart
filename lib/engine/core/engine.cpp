@@ -74,6 +74,7 @@ void EngineCore::render(float dt)
 
     primitive_renderer.shader_filter_hook(dt);
     
+    // just for rendering a simple axis for debug
     Vector3 xpoint = {5, 0, 0};
     Vector3 zpoint = {0, 0, 5};
     Vector3 anchor = {0, 0, 0};

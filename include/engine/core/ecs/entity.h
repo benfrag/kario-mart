@@ -15,45 +15,46 @@ using Signature = std::bitset<MAX_COMPONENTS>;
 
 class EntityManager {
 public:
-    EntityManager() {
-        // Initialize the queue with all possible entity IDs
-        for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
-            availableEntities.push(entity);
+    EntityManager()
+    {
+        for (Entity entity = 0; entity < MAX_ENTITIES; ++entity)
+        {
+            available_entities.push(entity);
         }
     }
 
-    Entity create_entity() {
-        //assert(livingEntityCount < MAX_ENTITIES, "Too many entities in existence.");
-        if (livingEntityCount >= MAX_ENTITIES)
+    Entity create_entity()
+    {
+        if (living_entity_count >= MAX_ENTITIES)
             throw std::runtime_error("Too many entities in existence.");
 
-        Entity id = availableEntities.front();
-        availableEntities.pop();
-        ++livingEntityCount;
+        Entity id = available_entities.front();
+        available_entities.pop();
+        ++living_entity_count;
 
         return id;
     }
 
-    void destroy_entity(Entity entity) {
-//        assert(entity < MAX_ENTITIES, "Entity out of range.");
+    void destroy_entity(Entity entity)
+    {
         if (entity >= MAX_ENTITIES)
             throw std::runtime_error("Entity out of range.");
 
         signatures[entity].reset(); // Clear the signature
-        availableEntities.push(entity); // Recycle the entity ID
-        --livingEntityCount;
+        available_entities.push(entity); // Recycle the entity ID
+        --living_entity_count;
     }
 
-    void set_signature(Entity entity, Signature signature) {
-//        assert(entity < MAX_ENTITIES, "Entity out of range.");
+    void set_signature(Entity entity, Signature signature)
+    {
         if (entity >= MAX_ENTITIES)
             throw std::runtime_error("Entity out of range.");
 
         signatures[entity] = signature;
     }
 
-    Signature get_signature(Entity entity) {
-//        assert(entity < MAX_ENTITIES, "Entity out of range.");
+    Signature get_signature(Entity entity)
+    {
         if (entity >= MAX_ENTITIES)
             throw std::runtime_error("Entity out of range.");
 
@@ -61,11 +62,10 @@ public:
 
     }
 private:
-    std::queue<Entity> availableEntities; // Pool of reusable entity IDs
+    std::queue<Entity> available_entities; // Pool of reusable entity IDs
     std::array<Signature, MAX_ENTITIES> signatures; // Array of signatures
-    uint32_t livingEntityCount = 0; // Total number of active entities
+    uint32_t living_entity_count = 0; // Total number of active entities
 
 };
-
 
 #endif

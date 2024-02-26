@@ -5,17 +5,7 @@
 #include <string>
 #include "engine/core/ecs/system.h"
 
-/*
-namespace {
-    std::atomic_uint componentTypeIDCounter{0};
-
-    template<typename T>
-    uint32_t get_component_type_id() {
-        static uint32_t id = componentTypeIDCounter++;
-        return id;
-    }
-}
-*/
+//unsafe, haven't implemented throwing errors
 
 class ECSController : public IECSController
 {
@@ -98,7 +88,8 @@ public:
     }
 
     template<typename T>
-    uint32_t get_component_type_id() {
+    uint32_t get_component_type_id()
+    {
         static uint32_t id = componentTypeIDCounter++;
         return id;
     }

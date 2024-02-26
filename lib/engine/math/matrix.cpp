@@ -73,28 +73,18 @@ Matrix4 Matrix4::create_view(Vector3 position, float yaw, float pitch)
         Vector3 f = (look_at - position);
     Vector3 up_direction = {0, 1, 0};
 
-    // Check if the forward vector is a zero vector
     if (f.magnitude() == 0) {
-        std::cout << "fuck" << std::endl;
-        // Handle the case where position and look_at are the same
-        // Perhaps return an identity matrix or handle this case as needed
         return Matrix4::identity();
     }
 
-    f = f.normalized(); // Forward
+    f = f.normalized();
 
-    // Check if up_direction is parallel to forward vector
     if (up_direction.cross(f).magnitude() == 0) {
-        std::cout << "fuck" << std::endl;
-        // Handle the case where up_direction is parallel to forward vector
-        // Adjust up_direction or handle as needed
         up_direction = Vector3(0.4f, 0.4f, 0.6f);
-        //up_direction = Vector3::some_other_vector(); // Replace with a valid vector
-                                                     //
     }
 
-    Vector3 r = up_direction.cross(f).normalized(); // Right
-    Vector3 u = f.cross(r); // Up
+    Vector3 r = up_direction.cross(f).normalized();
+    Vector3 u = f.cross(r);
 
     Matrix4 result;
 
@@ -136,10 +126,10 @@ Matrix4 Matrix4::identity()
 {
     Matrix4 new_matrix;
     float default_m[16] = {
-    1.0f, 0.0f, 0.0f, 0.0f, // First row
-    0.0f, 1.0f, 0.0f, 0.0f, // Second row
-    0.0f, 0.0f, 1.0f, 0.0f, // Third row
-    0.0f, 0.0f, 0.0f, 1.0f  // Fourth row
+    1.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 1.0f, 0.0f,
+    0.0f, 0.0f, 0.0f, 1.0f
     };
 
     std::memcpy(new_matrix.m, default_m, 16 * sizeof(float));
@@ -158,19 +148,16 @@ Matrix4 Matrix4::multiply_mat(Matrix4* _A, Matrix4* _B)
     new_matrix.m[2] = A[2] * B[0] + A[6] * B[1] + A[10] * B[2] + A[14] * B[3];
     new_matrix.m[3] = A[3] * B[0] + A[7] * B[1] + A[11] * B[2] + A[15] * B[3];
 
-    // Next, compute the second column of the new matrix
     new_matrix.m[4] = A[0] * B[4] + A[4] * B[5] + A[8] * B[6] + A[12] * B[7];
     new_matrix.m[5] = A[1] * B[4] + A[5] * B[5] + A[9] * B[6] + A[13] * B[7];
     new_matrix.m[6] = A[2] * B[4] + A[6] * B[5] + A[10] * B[6] + A[14] * B[7];
     new_matrix.m[7] = A[3] * B[4] + A[7] * B[5] + A[11] * B[6] + A[15] * B[7];
 
-    // Then, compute the third column of the new matrix
     new_matrix.m[8] = A[0] * B[8] + A[4] * B[9] + A[8] * B[10] + A[12] * B[11];
     new_matrix.m[9] = A[1] * B[8] + A[5] * B[9] + A[9] * B[10] + A[13] * B[11];
     new_matrix.m[10] = A[2] * B[8] + A[6] * B[9] + A[10] * B[10] + A[14] * B[11];
     new_matrix.m[11] = A[3] * B[8] + A[7] * B[9] + A[11] * B[10] + A[15] * B[11];
 
-    // Finally, compute the fourth column of the new matrix
     new_matrix.m[12] = A[0] * B[12] + A[4] * B[13] + A[8] * B[14] + A[12] * B[15];
     new_matrix.m[13] = A[1] * B[12] + A[5] * B[13] + A[9] * B[14] + A[13] * B[15];
     new_matrix.m[14] = A[2] * B[12] + A[6] * B[13] + A[10] * B[14] + A[14] * B[15];

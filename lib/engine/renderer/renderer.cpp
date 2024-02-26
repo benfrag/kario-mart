@@ -25,12 +25,12 @@ void Renderer::update_config(int width, int height)
     //front_buffer = new uint32_t[width * height];
 //    alignas(32) uint32_t* front_buffer = new uint32_t[width * height];
     //back_buffer = new uint32_t[width * height];
-  front_buffer = static_cast<uint32_t*>(_aligned_malloc(width * height * sizeof(uint32_t), 32)); 
+    front_buffer = static_cast<uint32_t*>(_aligned_malloc(width * height * sizeof(uint32_t), 32)); 
    back_buffer = static_cast<uint32_t*>(_aligned_malloc(width * height * sizeof(uint32_t), 32)); 
 
 //    alignas(32) uint32_t* back_buffer = new uint32_t[width * height];
 
-   z_buffer = new float[width * height];
+    z_buffer = new float[width * height];
     std::fill_n(front_buffer, width * height, 0xFF00FFFF);
     std::fill_n(back_buffer, width * height, 0xFF00FFFF);
     std::fill_n(z_buffer, width * height, std::numeric_limits<float>::max());

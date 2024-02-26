@@ -2,10 +2,11 @@
 #include "engine/core/base_systems/render_system.h"
 #include <iostream>
 
-Matrix4 rotationX(float angleRadians)
+// NOT MY OWN ROTATION FUNCTIONS
+Matrix4 rotationx(float ang)
 {
-    float c = cos(angleRadians);
-    float s = sin(angleRadians);
+    float c = cos(ang);
+    float s = sin(ang);
     Matrix4 result = Matrix4::identity();
     result.m[5] = c;
     result.m[6] = -s;
@@ -14,10 +15,10 @@ Matrix4 rotationX(float angleRadians)
     return result;
 }
 
-Matrix4 rotationY(float angleRadians)
+Matrix4 rotationy(float ang)
 {
-    float c = cos(angleRadians);
-    float s = sin(angleRadians);
+    float c = cos(ang);
+    float s = sin(ang);
     Matrix4 result = Matrix4::identity();
     result.m[0] = c;
     result.m[2] = -s;
@@ -26,10 +27,10 @@ Matrix4 rotationY(float angleRadians)
     return result;
 }
 
-Matrix4 rotationZ(float angleRadians)
+Matrix4 rotationz(float ang)
 {
-    float c = cos(angleRadians);
-    float s = sin(angleRadians);
+    float c = cos(ang);
+    float s = sin(ang);
     Matrix4 result = Matrix4::identity();
     result.m[0] = c;
     result.m[1] = -s;
@@ -37,6 +38,7 @@ Matrix4 rotationZ(float angleRadians)
     result.m[5] = c;
     return result;
 }
+// END OF NOT MY OWN
 
 void RenderSystem::update(void* engine_core, float dt)
 {
@@ -57,24 +59,17 @@ void RenderSystem::update(void* engine_core, float dt)
 //            Vector3 delta_position = transform->position - geometry->old_transform.position;
             Vector3 delta_position = transform->position;
             std::size_t n = geometry->vertices.size();
-            float yawRadians = (transform->rotation.y) * (3.14159 / 180.f);
-            float pitchRadians = (transform->rotation.x) * (3.14159 / 180.f);
-            float rollRadians = (transform->rotation.z) * (3.14159 / 180.f);
+            float yaw_rads = (transform->rotation.y) * (3.14159 / 180.f);
+            float pitch_rads = (transform->rotation.x) * (3.14159 / 180.f);
+            float roll_rads = (transform->rotation.z) * (3.14159 / 180.f);
 
-            Matrix4 rotX = rotationX(pitchRadians);
-            Matrix4 rotY = rotationY(yawRadians);
-            Matrix4 rotZ = rotationZ(rollRadians);
+            Matrix4 rotX = rotationx(pitch_rads);
+            Matrix4 rotY = rotationy(yaw_rads);
+            Matrix4 rotZ = rotationz(roll_rads);
 
-            // Combine rotation matrices
-//            Matrix4 rotationMatrix = rotZ.multiply_mat(&rotY, &rotZ).multiply_mat(&rotX, &rotZ); // Note: Adjust this line according to your matrix multiplication method
 
-            /*
-            Matrix4 rotationMatrix = rotZ.multiply_mat(&rotY, &rotZ);
-            rotationMatrix = rotationMatrix.multiply_mat(&rotationMatrix, &rotX);
-            */
-
-            Matrix4 rotationMatrix = rotZ.multiply_mat(&rotY, &rotZ);
-rotationMatrix = rotationMatrix.multiply_mat(&rotationMatrix, &rotX);
+            Matrix4 rotation_matrix = rotZ.multiply_mat(&rotY, &rotZ);
+            rotation_matrix = rotation_matrix.multiply_mat(&rotation_matrix, &rotX);
 
             geometry->render_vertices = geometry->vertices;
             for (std::size_t i = 0; i < n; ++i)
@@ -82,7 +77,7 @@ rotationMatrix = rotationMatrix.multiply_mat(&rotationMatrix, &rotX);
                 /*geometry->vertices[i] = geometry->vertices[i] + delta_position;
                 geometry->vertices[i] = rotationMatrix.multiply(geometry->vertices[i]);
                 */
-                geometry->render_vertices[i] = rotationMatrix.multiply(geometry->vertices[i]);
+                geometry->render_vertices[i] = rotation_matrix.multiply(geometry->vertices[i]);
                 geometry->render_vertices[i] = geometry->render_vertices[i] + delta_position;
             }
 
