@@ -1,5 +1,7 @@
 # Kario Mart
 
+Submitted for extension assignment for 41039.
+
 video showcase:  
 [![showcase on youtube](http://img.youtube.com/vi/GtnzE2LabZM/0.jpg)](http://www.youtube.com/watch?v=GtnzE2LabZM "Showcase")
 
