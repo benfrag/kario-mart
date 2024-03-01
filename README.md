@@ -3,7 +3,7 @@
 Submitted for extension assignment for 41039.
 
 video showcase:  
-youtube link: [http://www.youtube.com/watch?v=GtnzE2LabZM](http://www.youtube.com/watch?v=GtnzE2LabZM)
+youtube link: [https://www.youtube.com/watch?v=GGUzZLrjOQo](https://www.youtube.com/watch?v=GGUzZLrjOQo)
 
 ## What is this project?
 This project was undertaken purely as an educational pursuit for my own further understanding of larger style project architecture and some of the underlying complexities of 3D rendering - I have undertaken similar projects before using Direct3D9, this project is new territory as there is no usage of external rendering libraries.
@@ -121,8 +121,8 @@ There are some old files in the repo such as camera.h prior to the implementatio
 
 ![Game Screenshot 320x240.](https://github.com/benfrag/kario-mart/blob/main/game_screenshot.png?raw=true)
 
-[![showcase on youtube](http://img.youtube.com/vi/GtnzE2LabZM/0.jpg)](http://www.youtube.com/watch?v=GtnzE2LabZM "Showcase")
+[![showcase on youtube](http://img.youtube.com/vi/GGUzZLrjOQo/0.jpg)](https://www.youtube.com/watch?v=GGUzZLrjOQo "Showcase")
 
-Raw youtube link: [http://www.youtube.com/watch?v=GtnzE2LabZM](http://www.youtube.com/watch?v=GtnzE2LabZM)
+Raw youtube link: [https://www.youtube.com/watch?v=GGUzZLrjOQo](https://www.youtube.com/watch?v=GGUzZLrjOQo)
 
 320x240 used in source for fps.
